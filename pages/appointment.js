@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react'
+import { Container, Row, Col, ButtonGroup, Button, Image, Form, Alert, Table } from 'react-bootstrap';
+
+export default function appointment(props) {
+
+  const [dataLoading, setdataLoading] = useState(false);
+  const [data, setData] = useState({});
+
+  useEffect(async () => {
+    if (!dataLoading) {
+      const res = await fetch('/api/LineUsers/Appointment/'+props.users.hn, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'GET'
+      })
+
+      const result = await res.json()
+      if (result.status === 'success') {
+        setData(result.data)
+        setdataLoading(true)
+      }
+    }
+  })
+
+  return (
+    <Container fluid className="m-0 p-0">
+      <Row className="justify-content-md-center mb-2">
+        <Col className="text-center">
+          <h4>รายการวันนัด</h4>
+        </Col>
+      </Row>
+      <Row className="justify-content-md-center mb-2">
+        <Col className="text-center">
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>วันนัด</th>
+                <th>แพทย์เจ้าของไข้</th>
+                <th>สถานที่</th>
+              </tr>
+            </thead>
+            <tbody>
+            {dataLoading && data.map(function (d) {
+              return (
+                <tr key={d.id}>
+                  <td>{d.id}</td>
+                  <td>{d.appointmentDttm}</td>
+                  <td>{d.sessionName}</td>
+                  <td>{d.locationName}</td>
+                </tr>
+              )
+            })}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
+    </Container>
+  )
+}
